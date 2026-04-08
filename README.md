@@ -28,18 +28,46 @@ On startup, `reconcile_upload_folder()` diffs the uploads folder against metadat
 
 ## Setup
 
-1. Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) — default path expected: `C:\Program Files (x86)\cloudflared\cloudflared.exe`
-2. Install dependencies:
+**The project expects to live at `C:\LocalServer`.** `menu_app.py` and `tray_app.py` both have `self.server_dir = Path("C:/LocalServer")` hardcoded. If you put it somewhere else, edit those two lines.
+
+1. Clone or copy the project to `C:\LocalServer`
+2. Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) — it's expected at `C:\Program Files (x86)\cloudflared\cloudflared.exe`. If yours is elsewhere, edit line 9 of `tunnel_runner.py`.
+3. Install dependencies:
    ```bash
-   pip install flask requests pyperclip plyer customtkinter psutil
+   pip install flask requests pyperclip plyer customtkinter psutil pystray pillow
    ```
-3. Run the menu:
+4. Run the menu:
    ```bash
    python menu_app.py
    ```
-4. Click **Start Server** — Flask starts on port 713, tunnel comes up within ~10 seconds
-5. Click **Upload Files** to open the browser upload page
-6. Double-click any file in the list to copy its share link
+5. Click **Start Server** — Flask starts on port 713, tunnel comes up within ~10 seconds
+6. Click **Upload Files** to open the browser upload page
+7. Double-click any file in the list to copy its share link
+
+**Optional — right-click context menu** (right-click any file → "Share to My Server"):
+```bash
+python context_menu.py --install
+# to remove:
+python context_menu.py --uninstall
+```
+
+---
+
+## Security model
+
+| Route | Access |
+|---|---|
+| `POST /upload` | Localhost only |
+| `DELETE /files/<id>` | Localhost only |
+| `GET /` (file list) | Localhost only |
+| `GET /api/files`, `/api/activity` | Localhost only |
+| `GET /files/<id>`, `/preview/<id>`, `/download/<id>` | **Public** (via tunnel) |
+
+"Localhost only" is enforced by checking for the absence of the `Cf-Connecting-Ip` header — Cloudflare always adds this, so tunnel traffic is blocked from upload/delete/listing routes.
+
+Share links are public by design, but each file gets a random 8-character ID (`secrets.choice` from 62 chars). There's no file enumeration endpoint exposed publicly.
+
+**Access logging** — `data/access_log.json` records the IP, user agent, and event type for every download/preview/share link open. This file stays local and is excluded from the repo via `.gitignore`.
 
 ---
 
