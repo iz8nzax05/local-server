@@ -1,0 +1,17 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 713,
+        "name": "MyServer",
+        "debug": false
+    },
+    "storage": {
+        "upload_folder": "data/uploads",
+        "metadata_file": "data/file_metadata.json",
+        "max_storage_mb": 0
+    },
+    "cleanup": {
+        "auto_delete_days": 0,
+        "check_interval_hours": 1
+    }
+}

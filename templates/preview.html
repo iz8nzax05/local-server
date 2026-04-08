@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ file.original_name }} &mdash; {{ hostname }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="preview-page">
+<div class="container">
+
+    <div class="preview-header">
+        <h2>{{ file.original_name }}</h2>
+        <div class="preview-actions">
+            <button class="btn btn-copy" onclick="copyLink('{{ share_link }}')">Copy Share Link</button>
+            <a href="{{ link }}" class="btn btn-download">Download</a>
+        </div>
+    </div>
+
+    <div class="preview-content">
+        {% if is_image %}
+        <img src="{{ inline_url }}" alt="{{ file.original_name }}" class="preview-image">
+        {% elif is_video %}
+        <video controls class="preview-video">
+            <source src="{{ inline_url }}" type="{{ file.mime_type }}">
+            Your browser does not support video playback.
+        </video>
+        {% elif is_audio %}
+        <audio controls class="preview-audio">
+            <source src="{{ inline_url }}" type="{{ file.mime_type }}">
+        </audio>
+        {% else %}
+        <div class="no-preview">
+            <p>No preview available for this file type.</p>
+            <a href="{{ link }}" class="btn btn-primary">Download File</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="file-details">
+        <span>Size: {{ file.size | filesizeformat }}</span>
+        <span>Type: {{ file.mime_type }}</span>
+        <span>Uploaded: {{ file.upload_time[:19] | replace("T", " ") }}</span>
+    </div>
+
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

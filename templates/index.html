@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ hostname }} &mdash; File Server</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>{{ hostname }}</h1>
+        <div class="storage-info">
+            <div class="storage-bar">
+                <div class="storage-fill" id="storageBar" style="width: {% if max_storage_bytes %}{{ (storage_used_bytes / max_storage_bytes * 100) | int }}%{% else %}0%{% endif %}"></div>
+            </div>
+            <span>{{ storage_used }} / {{ max_storage }}</span>
+        </div>
+    </header>
+
+    <!-- Upload Zone -->
+    <div id="dropZone" class="drop-zone">
+        <p>Drag files here or click to upload</p>
+        <input type="file" id="fileInput" multiple hidden>
+        <div id="uploadProgress" class="progress-bar" hidden>
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- File List -->
+    <div class="file-list">
+        {% for file in files %}
+        <div class="file-card" data-id="{{ file.id }}">
+            {% if file.is_image %}
+            <div class="thumbnail">
+                <img src="/inline/{{ file.id }}" alt="{{ file.name }}" loading="lazy">
+            </div>
+            {% endif %}
+            <div class="file-info">
+                <a href="/preview/{{ file.id }}" class="file-name">{{ file.name }}</a>
+                <span class="file-meta">{{ file.size_human }} &middot; {{ file.upload_time[:10] }}</span>
+            </div>
+            <div class="file-actions">
+                <button class="btn btn-icon btn-copy" onclick="copyLink('{{ file.link }}')" title="Copy link">&#128203;</button>
+                <a href="/files/{{ file.id }}" class="btn btn-icon btn-download" title="Download">&#8681;</a>
+                <button class="btn btn-icon btn-delete" onclick="deleteFile('{{ file.id }}')" title="Delete">&#128465;</button>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if not files %}
+        <div class="empty-state">
+            <p>No files yet. Drag a file above or right-click a file and choose "Share to My Server".</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent activity (uploads, downloads, errors) -->
+    <section class="activity-section">
+        <h2 class="activity-heading">Recent activity</h2>
+        <p class="activity-hint">Uploads from "Share to My Server" and other events appear here; the file list updates automatically.</p>
+        <ul id="activityList" class="activity-list"></ul>
+        <p id="activityEmpty" class="activity-empty">No activity yet.</p>
+    </section>
+
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
