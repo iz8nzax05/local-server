@@ -82,8 +82,11 @@ Share links are public by design, but each file gets a random 8-character ID (`s
 | `upload_handler.py` | Chunked upload handler + toast notifications |
 | `context_menu.py` | Windows context menu integration |
 | `cleanup_orphans.py` | Standalone orphan file cleaner |
+| `menu_ui.py` | CustomTkinter UI with full server logic (themed version) |
+| `menu_ui_demo.py` | Theme test demo — UI only, no server logic |
+| `menu_ui_original.py` | Original tkinter menu (kept for comparison) |
 | `config.json` | Port, storage paths, auto-delete settings |
 | `templates/` | Upload page + file preview page (HTML) |
 | `static/` | CSS + JS for the web UI |
 
-**~2,000 lines** across 7 Python modules.
+**~3,100 lines** across 10 Python modules.
